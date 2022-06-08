@@ -27,10 +27,13 @@ jobs:
       run: |
         cd qmk_firmware && make git-submodule
 
-    - name: Compile Custom Firmware
+    - name: Copy keymap
       run: |
         cp -rp keyboards/nullbitsco/nibble/keymaps/dsmap qmk_firmware/keyboards/nullbitsco/nibble/keymaps/
-        make  nullbitsco/nibble:dsmap
+        
+    - name: Compile Custom Firmware
+      run: |
+        cd qmk_firmware && make nullbitsco/nibble:dsmap
 
     - name: Upload compiled firmware (build artifact)
       uses: actions/upload-artifact@v3
