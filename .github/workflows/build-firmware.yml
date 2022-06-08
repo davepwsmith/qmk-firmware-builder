@@ -1,0 +1,44 @@
+name: Build Custom Firmaware
+
+on:
+  push:
+  workflow_dispatch:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    container: qmkfm/qmk_cli
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    
+    - name: Get Vial QMK fork
+      run: | 
+        qmk clone -b vial vial-kb/vial-qmk
+        cp -R /keyboards/nullbitsco/nibble/keymaps/dsmap /qmk_firmware/keyboards/nullbitsco/nibble/dsmap
+        cd qmk_firmware
+
+    - name: Verify Vial UID is unique
+      run: python3 util/ci_vial_verify_uid.py
+
+    - name: Compile Custom Keymap
+      run: |
+        make git-submodule
+        make  nullbitsco/nibble:dsmap
+
+    - name: Upload compiled firmware (build artifact)
+      uses: actions/upload-artifact@v3
+      with:
+        name: Nullbits Nibble Firmware
+        path: /qmk_firmware/nullbitsco_nibble_dsmap.hex
+
+    - name: Upload compiled firmware (tagged release)
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        files: |
+          /qmk_firmware/nullbitsco_nibble_dsmap.hex
