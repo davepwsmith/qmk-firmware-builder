@@ -19,7 +19,9 @@ jobs:
     - name: Setup Variables
       run: |
         SUB=$KEYBOARD | tr / _
+        echo $SUB
         echo "FIRMWARE_FILENAME=$SUB" >> $GITHUB_ENV
+        echo ${{env.FIRMWARE_FILENAME}}
 
     - name: Checkout custom keymaps
       uses: actions/checkout@v3
@@ -49,7 +51,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: Nullbits Nibble Firmware
-        path: qmk_firmware/*.(hex|bin)
+        path: qmk_firmware/${{ env.FIRMWARE_FILENAME }}_${{ env.KEYMAP}}.(hex|bin)
 
     - name: Upload compiled firmware (tagged release)
       uses: softprops/action-gh-release@v1
