@@ -5,6 +5,10 @@ on:
   workflow_dispatch:
   pull_request:
 
+env:
+  KEYBOARD: nullbitsco/nibble
+  KEYMAP: custom-vial
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -12,6 +16,10 @@ jobs:
     container: qmkfm/qmk_cli
 
     steps:
+    - name: Setup Variables
+      run: |
+        echo "FIRMWARE_FILENAME=${KEYBOARD//\//_}" >> $GITHUB_ENV
+
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0
@@ -29,21 +37,21 @@ jobs:
 
     - name: Copy keymap
       run: |
-        cp -rp custom-vial qmk_firmware/keyboards/nullbitsco/nibble/keymaps/
+        cp -rp keymaps/$KEYMAP qmk_firmware/keyboards/$KEYBOARD/keymaps/
         
     - name: Compile Custom Firmware
       run: |
-        cd qmk_firmware && make nullbitsco/nibble:custom-vial
+        cd qmk_firmware && make $KEYBOARD:$KEYMAP
 
     - name: Upload compiled firmware (build artifact)
       uses: actions/upload-artifact@v3
       with:
         name: Nullbits Nibble Firmware
-        path: qmk_firmware/nullbitsco_nibble_custom-vial.hex
+        path: qmk_firmware/*.(hex|bin)
 
     - name: Upload compiled firmware (tagged release)
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
         files: |
-          qmk_firmware/nullbitsco_nibble_custom-vial.hex
+          qmk_firmware/${{ env.FIRMWARE_FILENAME }}_${{ env.KEYMAP}}.(hex|bin)
