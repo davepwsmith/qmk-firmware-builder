@@ -18,7 +18,8 @@ jobs:
     steps:
     - name: Setup Variables
       run: |
-        echo "FIRMWARE_FILENAME=${KEYBOARD//\//_}" >> $GITHUB_ENV
+        SUB=${KEYBOARD//\//_}
+        echo "FIRMWARE_FILENAME=$SUB" >> $GITHUB_ENV
 
     - uses: actions/checkout@v3
       with:
