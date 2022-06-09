@@ -12,6 +12,10 @@ You could use this repo for any keyboard like this:
 3. Edit the env variables in the .gituhub/workflows/build-firmware.yml to reflect the keyboard that 
    you are building for and the name of your keymap - i.e update KEYBOARD to be the name of the target 
    keyboard and KEYMAP to be the name of the keymap folder you created in step 2
+
+   Optionally, if for some reason you don't want to use the Vial QMK fork, you can also update the 
+   QMK_REPO and QMK_BRANCH variables to set which repository and branch you want to use for your 
+   QMK clone.
 4. Push the repo to your fork and enable the workflow action. If you want to build/maintain multiple 
    keyboards then you can create multiple folders (step 2) and duplicate the github actions, updating 
    the variables as in step 3 to suit

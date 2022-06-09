@@ -6,6 +6,8 @@ on:
   pull_request:
 
 env:
+  QMK_REPO: vial-kb/vial-qmk
+  QMK_BRANCH: vial
   KEYBOARD: nullbitsco/nibble
   KEYMAP: custom-vial
 
@@ -26,10 +28,7 @@ jobs:
     
     - name: Get Vial QMK fork
       run: | 
-        qmk clone -b vial vial-kb/vial-qmk
-
-    - name: Verify Vial UID is unique
-      run: python3 qmk_firmware/util/ci_vial_verify_uid.py
+        qmk clone -b $QMK_BRANCH $QMK_REPO
 
     - name: Compile QMK Submodules
       run: |
