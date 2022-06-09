@@ -29,21 +29,21 @@ jobs:
 
     - name: Copy keymap
       run: |
-        cp -rp keyboards/nullbitsco/nibble/keymaps/dsmap qmk_firmware/keyboards/nullbitsco/nibble/keymaps/
+        cp -rp custom-vial qmk_firmware/keyboards/nullbitsco/nibble/keymaps/
         
     - name: Compile Custom Firmware
       run: |
-        cd qmk_firmware && make nullbitsco/nibble:dsmap
+        cd qmk_firmware && make nullbitsco/nibble:custom-vial
 
     - name: Upload compiled firmware (build artifact)
       uses: actions/upload-artifact@v3
       with:
         name: Nullbits Nibble Firmware
-        path: qmk_firmware/nullbitsco_nibble_dsmap.hex
+        path: qmk_firmware/nullbitsco_nibble_custom-vial.hex
 
     - name: Upload compiled firmware (tagged release)
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
         files: |
-          qmk_firmware/nullbitsco_nibble_dsmap.hex
+          qmk_firmware/nullbitsco_nibble_custom-vial.hex
