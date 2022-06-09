@@ -18,7 +18,7 @@ jobs:
     steps:
     - name: Setup Variables
       run: |
-        echo "FIRMWARE_FILENAME=$(echo KEYBOARD | tr / _)" >> $GITHUB_ENV
+        echo "FIRMWARE_FILENAME=$(echo $KEYBOARD | tr / _)" >> $GITHUB_ENV
         echo ${{ env.FIRMWARE_FILENAME }}
 
     - name: Checkout custom keymaps
