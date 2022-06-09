@@ -12,7 +12,6 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     container: qmkfm/qmk_cli
 
     steps:
@@ -48,11 +47,11 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: Nullbits Nibble Firmware
-        path: qmk_firmware/${{ env.FIRMWARE_FILENAME }}_${{ env.KEYMAP}}.*
+        path: qmk_firmware/${{ env.FIRMWARE_FILENAME }}_${{ env.KEYMAP }}.*
 
     - name: Upload compiled firmware (tagged release)
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
         files: |
-          qmk_firmware/${{ env.FIRMWARE_FILENAME }}_${{ env.KEYMAP}}.*
+          qmk_firmware/${{ env.FIRMWARE_FILENAME }}_${{ env.KEYMAP }}.*
