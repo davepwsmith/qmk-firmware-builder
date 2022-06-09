@@ -18,6 +18,7 @@ jobs:
     steps:
     - name: Setup Variables
       run: |
+        echo $SHELL
         echo ${KEYBOARD////_}
         echo "FIRMWARE_FILENAME=${KEYBOARD////_}" >> $GITHUB_ENV
 
