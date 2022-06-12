@@ -20,7 +20,7 @@ jobs:
       with:
         fetch-depth: 0
     
-    - name: Clone Vial QMK fork
+    - name: Clone QMK fork
       run: | 
         git clone --no-checkout https://github.com/$QMK_REPO.git --depth 1 ./qmk_firmware
 
@@ -31,10 +31,9 @@ jobs:
         echo "/*\n!/keyboards\n" > .git/info/sparse-checkout
         for kb in $(find ../keyboards -depth -type d |  awk '$0 !~ /keymaps/' | awk -F / 'NF>=p; {p=NF}' |sed 's/..//'); do echo "$kb/*\n" >> .git/info/sparse-checkout; done;
         echo "!/keyboards/**/keymaps\n" >> .git/info/sparse-checkout
-        cat .git/info/sparse-checkout
         git checkout $QMK_BRANCH --
 
-    - name: Compile QMK Submodules
+    - name: Set Up QMK
       working-directory: ./qmk_firmware
       run: |
         qmk setup -y

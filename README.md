@@ -11,7 +11,9 @@ You could use this repo for any keyboard like this:
 2. Create a folder for your keyboard/keymap, and put it in the correct directory - as it would be in QMK. 
    For example, my custom nibble firmware goes into 
    `./keyboards/nullbitsco/nibble/keymaps/custom-vial` - you only need to add the keymap, if it builds
-   on default or already existing firmware (see my nibble keymap, in this repo, as an example of this).
+   on default or already existing firmware. **NB: If your keyboard/vendor has a shared directory for 
+   common code for multiple keyboards, you will need to create that folder and add a .gitkeep file to
+   it (see my nibble keymap, in this repo, as an example of this).
 3. Optionally, if for some reason you don't want to use the Vial QMK fork, you can also update the 
    QMK_REPO and QMK_BRANCH variables to set which repository and branch you want to use for your 
    QMK clone. You should try Vial though - it's [easy to use](https://https://get.vial.today) and it [rocks](https://vial.rocks)
