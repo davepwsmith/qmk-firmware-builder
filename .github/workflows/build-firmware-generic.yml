@@ -31,7 +31,7 @@ jobs:
       run: |
         git config core.sparsecheckout true
         echo "/*\n!/keyboards\n" > .git/info/sparse-checkout
-        for kb in $(find /keyboards -depth -type d | awk -F / 'NF>=p; {p=NF}' | awk '$0 !~ /keymaps/'); do echo "$kb/*\n" >> /qmk_firmware/.git/info/sparse-checkout; done;
+        cd .. && for kb in $(find keyboards -depth -type d | awk -F / 'NF>=p; {p=NF}' | awk '$0 !~ /keymaps/'); do echo "/$kb/*\n" >> ./qmk_firmware/.git/info/sparse-checkout; done;
         echo "!/keyboards/**/keymaps\n" >> .git/info/sparse-checkout
         git checkout $QMK_BRANCH --
 
