@@ -46,7 +46,7 @@ jobs:
     - name: Upload compiled firmware (build artifact)
       uses: actions/upload-artifact@v3
       with:
-        name: Nullbits Nibble Firmware
+        name: Firmware Files
         path: qmk_firmware/${{ env.FIRMWARE_FILENAME }}_${{ env.KEYMAP }}.*
 
     - name: Upload compiled firmware (tagged release)
