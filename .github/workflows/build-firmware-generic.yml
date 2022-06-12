@@ -23,7 +23,7 @@ jobs:
     
     - name: Clone Vial QMK fork
       run: | 
-        git clone --no-checkout https://github.com/$QMK_REPO.git --depth 1 /qmk_firmware && \
+        git clone --no-checkout https://github.com/$QMK_REPO.git --depth 1 /qmk_firmware
 
     - name: Determine & Checkout relevant keyboards
       working-directory: qmk_firmware
