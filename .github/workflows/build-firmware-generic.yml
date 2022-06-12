@@ -32,6 +32,7 @@ jobs:
         echo "/*\n!/keyboards\n" > .git/info/sparse-checkout
         cd .. && for kb in $(find keyboards -depth -type d | awk -F / 'NF>=p; {p=NF}' | awk '$0 !~ /keymaps/'); do echo "/$kb/*\n" >> ./qmk_firmware/.git/info/sparse-checkout; done; cd ./qmk_firmware
         echo "!/keyboards/**/keymaps\n" >> .git/info/sparse-checkout
+        cat .git/info/sparse-checkout
         git checkout $QMK_BRANCH --
 
     - name: Compile QMK Submodules
@@ -56,13 +57,13 @@ jobs:
       with:
         name: Firmware Files
         path: |
-          qmk_firmware/*.hex
-          qmk_firmware/*.bin
+          ./qmk_firmware/*.hex
+          ./qmk_firmware/*.bin
 
     - name: Upload compiled firmware (tagged release)
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
         files: |
-          qmk_firmware/*.hex
-          qmk_firmware/*.bin
+          ./qmk_firmware/*.hex
+          ./qmk_firmware/*.bin
