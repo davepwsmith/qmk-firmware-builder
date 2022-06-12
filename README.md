@@ -16,7 +16,7 @@ You could use this repo for any keyboard like this:
    it (see my nibble keymap, in this repo, as an example of this).
 3. Optionally, if for some reason you don't want to use the Vial QMK fork, you can also update the 
    QMK_REPO and QMK_BRANCH variables to set which repository and branch you want to use for your 
-   QMK clone. You should try Vial though - it's [easy to use](https://https://get.vial.today) and it [rocks](https://vial.rocks)
+   QMK clone. You should try Vial though - it's [easy to use](https://get.vial.today) and it [rocks](https://vial.rocks)
 4. Push the repo to your fork and enable the workflow action. All the keyboards that are present in the folder will be copied and built
 
 Leave an issue if something doesn't work. 
