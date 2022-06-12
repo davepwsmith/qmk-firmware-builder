@@ -1,0 +1,63 @@
+name: Build Custom Firmaware 2
+
+on:
+  push:
+  workflow_dispatch:
+  pull_request:
+
+env:
+  QMK_REPO: vial-kb/vial-qmk
+  QMK_BRANCH: vial
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: qmkfm/qmk_cli
+
+    steps:
+
+    - name: Checkout custom keymaps
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    
+    - name: Get Vial QMK fork & relevant keyboards
+      run: | 
+        git clone --no-checkout https://github.com/$QMK_REPO.git --depth 1 /qmk_firmware
+        cd /qmk_firmware
+        git config core.sparsecheckout true
+        echo "/*\n!/keyboards\n" > .git/info/sparse-checkout
+        for kb in $(find /keyboards -depth -type d | awk -F / 'NF>=p; {p=NF}' | awk '$0 !~ /keymaps/'); do echo "$kb/*\n" >> /qmk_firmware/.git/info/sparse-checkout; done;
+        echo "!/keyboards/**/keymaps\n" >> .git/info/sparse-checkout
+        git checkout $QMK_BRANCH --
+
+    - name: Copy keymap
+      run: |
+        cp -rup keyboards/* qmk_firmware/keyboards/
+
+    - name: Compile QMK Submodules
+      run: |
+        cd qmk_firmware 
+        make git-submodule
+        qmk setup -y
+        
+    - name: Compile Custom Firmware
+      run: |
+        cd qmk_firmware
+        make all
+
+    - name: Upload compiled firmware (build artifact)
+      uses: actions/upload-artifact@v3
+      with:
+        name: Nullbits Nibble Firmware
+        path: |
+          qmk_firmware/*.hex
+          qmk_firmware/*.bin
+
+    - name: Upload compiled firmware (tagged release)
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        files: |
+          qmk_firmware/*.hex
+          qmk_firmware/*.bin
