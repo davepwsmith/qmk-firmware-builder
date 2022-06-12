@@ -26,7 +26,7 @@ jobs:
         git clone --no-checkout https://github.com/$QMK_REPO.git --depth 1 /qmk_firmware
 
     - name: Determine & Checkout relevant keyboards
-      working-directory: qmk_firmware
+      working-directory: ./qmk_firmware
       run: |
         git config core.sparsecheckout true
         echo "/*\n!/keyboards\n" > .git/info/sparse-checkout
@@ -40,13 +40,13 @@ jobs:
         cp -rup keyboards/* qmk_firmware/keyboards/
 
     - name: Compile QMK Submodules
-      working-directory: qmk_firmware
+      working-directory: ./qmk_firmware
       run: |
         make git-submodule
         qmk setup -y
         
     - name: Compile Custom Firmware
-      working-directory: qmk_firmware
+      working-directory: ./qmk_firmware
       run: |
         make all
 
