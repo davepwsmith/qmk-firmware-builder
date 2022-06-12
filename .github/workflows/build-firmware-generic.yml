@@ -21,14 +21,17 @@ jobs:
       with:
         fetch-depth: 0
     
-    - name: Get Vial QMK fork & relevant keyboards
+    - name: Clone Vial QMK fork
       run: | 
-        git clone --no-checkout https://github.com/$QMK_REPO.git --depth 1 /qmk_firmware &&
-        cd /qmk_firmware &&()
-        git config core.sparsecheckout true &&
-        echo "/*\n!/keyboards\n" > .git/info/sparse-checkout &&
-        for kb in $(find /keyboards -depth -type d | awk -F / 'NF>=p; {p=NF}' | awk '$0 !~ /keymaps/'); do echo "$kb/*\n" >> /qmk_firmware/.git/info/sparse-checkout; done; &&
-        echo "!/keyboards/**/keymaps\n" >> .git/info/sparse-checkout &&
+        git clone --no-checkout https://github.com/$QMK_REPO.git --depth 1 /qmk_firmware && \
+
+    - name: Determine & Checkout relevant keyboards
+      working-directory: qmk_firmware
+      run: |
+        git config core.sparsecheckout true
+        echo "/*\n!/keyboards\n" > .git/info/sparse-checkout
+        for kb in $(find /keyboards -depth -type d | awk -F / 'NF>=p; {p=NF}' | awk '$0 !~ /keymaps/'); do echo "$kb/*\n" >> /qmk_firmware/.git/info/sparse-checkout; done;
+        echo "!/keyboards/**/keymaps\n" >> .git/info/sparse-checkout
         git checkout $QMK_BRANCH --
 
     - name: Copy keymap
@@ -37,14 +40,14 @@ jobs:
         cp -rup keyboards/* qmk_firmware/keyboards/
 
     - name: Compile QMK Submodules
+      working-directory: qmk_firmware
       run: |
-        cd qmk_firmware && 
-        make git-submodule &&
+        make git-submodule
         qmk setup -y
         
     - name: Compile Custom Firmware
+      working-directory: qmk_firmware
       run: |
-        cd qmk_firmware &&
         make all
 
     - name: Upload compiled firmware (build artifact)
