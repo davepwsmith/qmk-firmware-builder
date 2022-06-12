@@ -3,13 +3,10 @@ name: Build Custom Firmaware
 on:
   push:
   workflow_dispatch:
-  pull_request:
 
 env:
   QMK_REPO: vial-kb/vial-qmk
   QMK_BRANCH: vial
-  KEYBOARD: nullbitsco/nibble
-  KEYMAP: custom-vial
 
 jobs:
   build:
@@ -17,43 +14,53 @@ jobs:
     container: qmkfm/qmk_cli
 
     steps:
-    - name: Setup Variables
-      run: |
-
-        echo "FIRMWARE_FILENAME=$(echo $KEYBOARD | tr / _)" >> $GITHUB_ENV
 
     - name: Checkout custom keymaps
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
     
-    - name: Get Vial QMK fork
+    - name: Clone Vial QMK fork
       run: | 
-        qmk clone -b $QMK_BRANCH $QMK_REPO
+        git clone --no-checkout https://github.com/$QMK_REPO.git --depth 1 ./qmk_firmware
+
+    - name: Determine & Checkout relevant keyboards
+      working-directory: ./qmk_firmware
+      run: |
+        git config core.sparsecheckout true
+        echo "/*\n!/keyboards\n" > .git/info/sparse-checkout
+        for kb in $(find ../keyboards -depth -type d |  awk '$0 !~ /keymaps/' | awk -F / 'NF>=p; {p=NF}' |sed 's/..//'); do echo "$kb/*\n" >> .git/info/sparse-checkout; done;
+        echo "!/keyboards/**/keymaps\n" >> .git/info/sparse-checkout
+        cat .git/info/sparse-checkout
+        git checkout $QMK_BRANCH --
 
     - name: Compile QMK Submodules
       working-directory: ./qmk_firmware
       run: |
-        make git-submodule
+        qmk setup -y
 
     - name: Copy keymap
       run: |
-        cp -rup keyboards/* qmk_firmware/keyboards/
+        mkdir -p qmk_firmware/keyboards/
+        cp -rup ./keyboards/* ./qmk_firmware/keyboards/
         
     - name: Compile Custom Firmware
       working-directory: ./qmk_firmware
       run: |
-        make $KEYBOARD:$KEYMAP
+        make all
 
     - name: Upload compiled firmware (build artifact)
       uses: actions/upload-artifact@v3
       with:
         name: Firmware Files
-        path: qmk_firmware/${{ env.FIRMWARE_FILENAME }}_${{ env.KEYMAP }}.*
+        path: |
+          ./qmk_firmware/*.hex
+          ./qmk_firmware/*.bin
 
     - name: Upload compiled firmware (tagged release)
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
         files: |
-          qmk_firmware/${{ env.FIRMWARE_FILENAME }}_${{ env.KEYMAP }}.*
+          ./qmk_firmware/*.hex
+          ./qmk_firmware/*.bin
