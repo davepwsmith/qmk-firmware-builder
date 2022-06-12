@@ -30,40 +30,41 @@ jobs:
       run: |
         git config core.sparsecheckout true
         echo "/*\n!/keyboards\n" > .git/info/sparse-checkout
+        cd .. && find keyboards -depth -type d | awk -F / 'NF>=p; {p=NF}' | awk '$0 !~ /keymaps/'
         cd .. && for kb in $(find keyboards -depth -type d | awk -F / 'NF>=p; {p=NF}' | awk '$0 !~ /keymaps/'); do echo "/$kb/*\n" >> ./qmk_firmware/.git/info/sparse-checkout; done; cd ./qmk_firmware
         echo "!/keyboards/**/keymaps\n" >> .git/info/sparse-checkout
         cat .git/info/sparse-checkout
         git checkout $QMK_BRANCH --
 
-    - name: Compile QMK Submodules
-      working-directory: ./qmk_firmware
-      run: |
-        make git-submodule
-        qmk setup -y
+    # - name: Compile QMK Submodules
+    #   working-directory: ./qmk_firmware
+    #   run: |
+    #     make git-submodule
+    #     qmk setup -y
 
-    - name: Copy keymap
-      run: |
-        mkdir -p qmk_firmware/keyboards/
-        cp -rup ./keyboards/* ./qmk_firmware/keyboards/
-        ls -R ./qmk_firmware/keyboards
+    # - name: Copy keymap
+    #   run: |
+    #     mkdir -p qmk_firmware/keyboards/
+    #     cp -rup ./keyboards/* ./qmk_firmware/keyboards/
+    #     ls -R ./qmk_firmware/keyboards
         
-    - name: Compile Custom Firmware
-      working-directory: ./qmk_firmware
-      run: |
-        make all
+    # - name: Compile Custom Firmware
+    #   working-directory: ./qmk_firmware
+    #   run: |
+    #     make all
 
-    - name: Upload compiled firmware (build artifact)
-      uses: actions/upload-artifact@v3
-      with:
-        name: Firmware Files
-        path: |
-          ./qmk_firmware/*.hex
-          ./qmk_firmware/*.bin
+    # - name: Upload compiled firmware (build artifact)
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: Firmware Files
+    #     path: |
+    #       ./qmk_firmware/*.hex
+    #       ./qmk_firmware/*.bin
 
-    - name: Upload compiled firmware (tagged release)
-      uses: softprops/action-gh-release@v1
-      if: startsWith(github.ref, 'refs/tags/')
-      with:
-        files: |
-          ./qmk_firmware/*.hex
-          ./qmk_firmware/*.bin
+    # - name: Upload compiled firmware (tagged release)
+    #   uses: softprops/action-gh-release@v1
+    #   if: startsWith(github.ref, 'refs/tags/')
+    #   with:
+    #     files: |
+    #       ./qmk_firmware/*.hex
+    #       ./qmk_firmware/*.bin
